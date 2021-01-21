@@ -17,12 +17,28 @@ import {
   StepConnector,
   StepContent,
   Button,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Chip,
+  TextField,
 } from "@material-ui/core";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
-import HorizontalNonLinearStepper from "./HorizontalNonLinearStepper";
+import AttachmentIcon from "@material-ui/icons/Attachment";
+
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import GetStepContent from "./GetStepContent";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,6 +54,12 @@ const useStyles = makeStyles((theme) => ({
   principalContent: {
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(3, 0, 6),
+  },
+  contentStep: {
+    marginTop: "2em",
+  },
+  mb1: {
+    marginBottom: "1em",
   },
 }));
 
@@ -117,12 +139,144 @@ function getSteps() {
     "Verificar",
   ];
 }
-function getStepContent(step) {
+const getStepContent = (step, handleNext) => {
   switch (step) {
     case 0:
-      return <h1>Seleccionar Tramite</h1>;
+      return (
+        <>
+          <Grid item xs={12} style={{ marginBottom: "1em" }}>
+            <Typography variant="subtitle2" align="right">
+              Buscador
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">Codigo</TableCell>
+                    <TableCell align="center">Tramite</TableCell>
+                    <TableCell align="center">Requisitos</TableCell>
+                    <TableCell align="center">Tiempo Estimado</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow hover onClick={handleNext}>
+                    <TableCell align="center">0125489</TableCell>
+                    <TableCell>Certificado de Estudios</TableCell>
+                    <TableCell>
+                      <List dense>
+                        <ListItem>
+                          <ListItemIcon>
+                            <AttachmentIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Solicitud Dirigida al Rector" />
+                        </ListItem>
+                        <ListItem>
+                          <ListItemIcon>
+                            <AttachmentIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Certificados de estudios secundarios conscluidos en original" />
+                        </ListItem>
+                        <ListItem>
+                          <ListItemIcon>
+                            <AttachmentIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Certificado de acreditacion expendio..." />
+                        </ListItem>
+                        <ListItem>
+                          <ListItemIcon>
+                            <AttachmentIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Certificado electronco de no tener atecendentes penales" />
+                        </ListItem>
+                      </List>
+                    </TableCell>
+                    <TableCell align="center">80 minutos</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+        </>
+      );
     case 1:
-      return "Datos del Interesado";
+      return (
+        <>
+          <Grid item md={6}>
+            <Autocomplete
+              id="TipoDocumento"
+              options={[
+                {
+                  _id: "5fd36f3a5b79009813640430",
+                  descripcion: "LIBRETA ELECTORAL O DNI",
+                  tipo: "L.E / DNI",
+                },
+                {
+                  _id: "5fd36fd65b79009813640435",
+                  descripcion: "CARNET DE EXTRANJERIA",
+                  tipo: "CARNET EXT.",
+                },
+                {
+                  _id: "5fd370365b79009813640436",
+                  descripcion: "REG. UNICO DE CONTRIBUYENTES",
+                  tipo: "RUC",
+                },
+                {
+                  _id: "5fd3704b5b79009813640437",
+                  descripcion: "PASAPORTE",
+                  tipo: "PASAPORTE",
+                },
+                {
+                  _id: "5fd3704b5b79009813640437",
+                  descripcion: "CARNET DE ESTUDIANTE",
+                  tipo: "CODIGO DE ESTUDIANTE",
+                },
+              ]}
+              getOptionLabel={(option) => option.tipo}
+              style={{ width: "100%" }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Tipo Documento"
+                  variant="outlined"
+                />
+              )}
+            />
+          </Grid>
+          <Grid item md={6}>
+            <TextField
+              id="NroDocumento"
+              label="Nro de Documento"
+              variant="outlined"
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              id="Nombre"
+              label="Nombre"
+              variant="outlined"
+              fullWidth
+              defaultValue="Nombre Completo"
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+          </Grid>
+          <Grid item md={6}>
+            <TextField
+              id="Telefono"
+              label="Telefono"
+              variant="outlined"
+              fullWidth
+            />
+          </Grid>
+          <Grid item md={6}>
+            <TextField id="Email" label="Email" variant="outlined" fullWidth />
+          </Grid>
+        </>
+      );
     case 2:
       return "Adjuntar Requisitos";
     case 3:
@@ -130,7 +284,7 @@ function getStepContent(step) {
     default:
       return "Desconocido";
   }
-}
+};
 
 const App = () => {
   const classes = useStyles();
@@ -197,10 +351,15 @@ const App = () => {
                         spacing={3}
                         direction="row"
                         justify="center"
+                        className={classes.contentStep}
                         //alignItems="center"
                       >
-                        <Grid container item xs={12}>
-                          {getStepContent(activeStep)}
+                        <Grid container spacing={3} item xs={12}>
+                          {/* {getStepContent(activeStep, handleNext) */}
+                          <GetStepContent
+                            step={activeStep}
+                            handleNext={handleNext}
+                          />
                         </Grid>
                         <Grid container item xs={12} justify="center">
                           <Button
