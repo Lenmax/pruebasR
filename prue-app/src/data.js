@@ -1,3 +1,8 @@
+const axios = require('axios');
+
+const urltramite = 'http://10.10.42.204:4020/api/';
+const urlgeneral = 'http://10.10.42.204:4010/api/';
+
 export const Links = [
   {
     id: 0,
@@ -46,6 +51,7 @@ export const employee = {
   Mobile: "555-684-1335",
   Email: "jheart@dx-email.com",
   Skype: "jheart_DX_skype",
+
 };
 
 export const positions = [
@@ -111,7 +117,23 @@ export const states = [
   "WY",
 ];
 
-export const tipoDocumento = [
+export const  tipoDocumento = () => {
+  return axios.post(urlgeneral + 'TipoDocumentoIdentidad', {
+    "jsonrpc": "2.0",
+    "method": "TipoDocumentoIdentidadlistarpor",
+    "params": {
+      "body": {
+        "tipodocumentoidentidad": null,
+        "descripcion": null,
+        "estado": null
+      }
+    },
+    "id": 1
+  })
+  .then(function (response) { return response;  })
+  .catch(function (error) { return error; });
+}
+/*export const tipoDocumento = [
   {
     _id: "5fd36f3a5b79009813640430",
     descripcion: "LIBRETA ELECTORAL O DNI",
@@ -137,9 +159,30 @@ export const tipoDocumento = [
     descripcion: "CARNET DE ESTUDIANTE",
     tipo: "CODIGO DE ESTUDIANTE",
   },
-];
+];*/
 
-export const tipoTramite = [
+export const  Procedimiento = () => {
+  return axios.post(urltramite + 'Procedimiento', {
+    "jsonrpc": "2.0",
+    "method": "Procedimientolistarpor",
+    "params": {
+      "body": {
+          "procedimiento": null,
+          "denominacion": null,
+          "tiempoestimado": null,
+          "observacion": null,
+          "codigo": null,
+          "categoria": null,
+          "baselegal": null,
+          "estado": null
+      }
+    },
+    "id": 2
+  })
+  .then(function (response) { return response;  })
+  .catch(function (error) { return error; });
+}
+/*export const tipoTramite = [
   {
     _id: "5fc7a24aae0fcc13b0a8aafb",
     concepto:
@@ -159,7 +202,8 @@ export const tipoTramite = [
     costo: "10.00",
     tiempoEstimado: "24h",
   },
-];
+];*/
+
 
 export const rutaTipoTramite = [
   {
@@ -202,7 +246,27 @@ export const rutaTipoTramite = [
   },
 ];
 
-export const requisitoTipoTramite = [
+
+export const  Requisito = () => {
+  return axios.post(urltramite + 'ProcedimientoRequisito', {
+    "jsonrpc": "2.0",
+    "method": "ProcedimientoRequisitolistarpor",
+    "params": {
+      "body": {
+          "procedimientorequisito": null,
+          "requisito": null,
+          "procedimiento": null,
+          "descripcion": null,
+          "urlformato": null,
+          "estado": null
+      }
+    },
+    "id": 2
+  })
+  .then(function (response) { return response;  })
+  .catch(function (error) { return error; });
+}
+/*export const requisitoTipoTramite = [
   {
     _idtipoTramite: "5fc7a24aae0fcc13b0a8aafb",
     requisitos: [
@@ -246,7 +310,7 @@ export const requisitoTipoTramite = [
       },
     ],
   },
-];
+];*/
 
 export const tramite = {
   _id: "0",

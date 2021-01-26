@@ -40,6 +40,9 @@ import AttachmentIcon from "@material-ui/icons/Attachment";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import GetStepContent from "./GetStepContent";
 
+import * as dataAPI from './data';
+
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -139,6 +142,7 @@ function getSteps() {
     "Verificar",
   ];
 }
+
 const getStepContent = (step, handleNext) => {
   switch (step) {
     case 0:
@@ -206,34 +210,8 @@ const getStepContent = (step, handleNext) => {
           <Grid item md={6}>
             <Autocomplete
               id="TipoDocumento"
-              options={[
-                {
-                  _id: "5fd36f3a5b79009813640430",
-                  descripcion: "LIBRETA ELECTORAL O DNI",
-                  tipo: "L.E / DNI",
-                },
-                {
-                  _id: "5fd36fd65b79009813640435",
-                  descripcion: "CARNET DE EXTRANJERIA",
-                  tipo: "CARNET EXT.",
-                },
-                {
-                  _id: "5fd370365b79009813640436",
-                  descripcion: "REG. UNICO DE CONTRIBUYENTES",
-                  tipo: "RUC",
-                },
-                {
-                  _id: "5fd3704b5b79009813640437",
-                  descripcion: "PASAPORTE",
-                  tipo: "PASAPORTE",
-                },
-                {
-                  _id: "5fd3704b5b79009813640437",
-                  descripcion: "CARNET DE ESTUDIANTE",
-                  tipo: "CODIGO DE ESTUDIANTE",
-                },
-              ]}
-              getOptionLabel={(option) => option.tipo}
+              options={tipoDocumentos}
+              getOptionLabel={(option) => option.tipodocumentoidentidad}
               style={{ width: "100%" }}
               renderInput={(params) => (
                 <TextField
@@ -286,6 +264,8 @@ const getStepContent = (step, handleNext) => {
   }
 };
 
+
+let tipoDocumentos = [];
 const App = () => {
   const classes = useStyles();
 
@@ -293,7 +273,7 @@ const App = () => {
   const [activeStep, setActiveStep] = React.useState(0);
 
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
   const handleBack = () => {
