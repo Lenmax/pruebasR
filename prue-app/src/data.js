@@ -312,6 +312,23 @@ export const  Requisito = () => {
   },
 ];*/
 
+
+export const Persona = (dni) => {
+  return axios.post(urlgeneral + 'Persona', {
+    "jsonrpc": "2.0",
+    "method": "PersonaRecuperar",
+    "params": {
+      "body": {
+          "dni": dni
+      }
+    },
+    "id": 2
+  })
+  .then(function (response) { return response;  })
+  .catch(function (error) { return error; });
+}
+
+
 export const tramite = {
   _id: "0",
   //Externos / Internos

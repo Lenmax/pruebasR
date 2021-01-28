@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Typography,
   CssBaseline,
@@ -39,20 +39,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const GetStepContent = ({ step, handleNext }) => {
+const GetStepContent = ({ step, handleNext, handleBack }) => {
   const classes = useStyles();
   const [ProcedimientoSeleccionado, setProcedimientoSeleccionado] = useState({});
   const [TipoDocumentos, setTipoDocumentos] = useState([])
+  const [TipoDocumentoCompleto, setTipoDocumentoCompleto] = useState("")
   const [Procedimiento, setProcedimiento] = useState([]);
   const [Requisito, setRequisito] = useState([]);
 
   const [DatosInteresado, setDatosInteresado] = useState({});
 
-  var nuevoExpediente = { procedimiento: "", expediente: "EXP2", documentoInteresado: "", responsablelegal:"", descripcion:"", detalle_expediente:"", periodo:"", 
+  var nuevoExpediente = { procedimiento: "", expediente: "EXP2", documentointeresado: "", responsablelegal:"", descripcion:"", detalle_expediente:"", periodo:"", 
   observacion_expediente: "", estadoexpediente: 0, tipoprioridad: 1, tipodocumento: "", dependenciaorigen:"", dependenciadestino: "", usuarioatiende:"",
   detalle_historialtramite: "", observacion_historialtramite:"", tipoestadohistorialtramite: 1, arreglo_historialarchivo:"", usuarioCreacion:""};
 
   const [Expediente, setExpediente] = useState(nuevoExpediente);
+  const [selectedFiles, setselectedFiles] = useState([]);
+
+//#region useEffect
 
   useEffect(() => {
     console.log("de esta forma se ejecuta mas de una vez y se va acumulando");
@@ -71,18 +75,30 @@ const GetStepContent = ({ step, handleNext }) => {
         procedimiento: k,
         procedimientos: hash[k],
       }));
-      //console.log(newhash);
+      console.log(newhash)
       setRequisito(newhash);
     }) 
+
     console.log("de esta forma solo se ejecuta una vez");
     return () => {
       //cleanup
     }
   },[])
 
-  console.log(Expediente);
+//#endregion
+
+
+if(typeof(selectedFiles) !== 'undefined'){
+  console.log("----------------------------------------------------------------")
+  console.log(selectedFiles); 
+  //console.log(selectedFiles.find( item => item.indice == 0)); 
+  console.log("----------------------------------------------------------------")
+}
+
 
   //Expediente
+//#region Expediente
+
   const handleTipoSelected = (item) => {
     setExpediente(prevState => ({
         ...prevState,
@@ -101,33 +117,73 @@ const GetStepContent = ({ step, handleNext }) => {
   const guardardocumentoInteresado= (item) => {
     setExpediente(prevState => ({
         ...prevState,
-        documentoInteresado: item
+        documentointeresado: item
     }));
+    Buscarpersona(item)
   };
-  const guardarnresponsablelegal= (item) => {
-    setExpediente(prevState => ({
-        ...prevState,
-        responsablelegal: item
-    }));
-  };
-  /*
-  const guardarnresponsablelegal= (item) => {
-    setExpediente(prevState => ({
-        ...prevState,
-        responsablelegal: item
-    }));
-  };
-  const guardarnresponsablelegal= (item) => {
-    setExpediente(prevState => ({
-        ...prevState,
-        responsablelegal: item
-    }));
-  };
-*/
 
-  function onClick() {
-    notify('Uncomment the line to enable sending a form to the server.');
-    //this.formElement.current.submit();
+  const guardarTipoDocumentoCompleto= (item) => {
+    setTipoDocumentoCompleto(item);
+  };
+
+  const guardarresponsablelegal= (item) => {
+    setExpediente(prevState => ({
+        ...prevState,
+        responsablelegal: item
+    }));
+  };
+
+  const Buscarpersona= (item) => {
+    dataAPI.Persona(item).then((res)=>{ 
+      if(res.data.result.length != 0){
+        setDatosInteresado(prevState => ({
+            ...prevState,
+            nombre: res.data.result[0].nombre,
+            telefono:  res.data.result[0].telefono,
+            email: res.data.result[0].email
+        }));
+        guardarresponsablelegal(res.data.result[0].nombre)
+      }
+    }) 
+  };
+
+
+  const guardarTelefono= (item) => {
+    setDatosInteresado(prevState => ({
+        ...prevState,
+        telefono:  item
+    }));
+  };
+
+  const guardarEmail= (item) => {
+    setDatosInteresado(prevState => ({
+        ...prevState,
+        email:  item
+    }));
+  };
+
+  //#endregion
+
+
+  const onSelectedFilesChanged = (e, index) => {
+
+
+    //console.log("******************************************************************")
+    var archivos = { indice:index, archivo : e }
+    let newArr = [...selectedFiles]; // copying the old datas array
+    let indicegeneral = selectedFiles.findIndex( item => item.indice == index)
+    newArr[indicegeneral] = archivos; 
+    if(indicegeneral!=-1){
+      setselectedFiles(newArr);
+    }
+    else{
+      setselectedFiles(prevArray => [...prevArray, archivos])
+    }
+    //console.log("******************************************************************")
+
+    /*var archivos = { indice:index, archivo : e }
+    setselectedFiles(prevArray => [...prevArray, archivos])*/
+
   }
 
   switch (step) {
@@ -209,10 +265,14 @@ const GetStepContent = ({ step, handleNext }) => {
             <Autocomplete
               id="TipoDocumento"
               onChange={(event, newValue) => {
-                guardarTipoDocumento(newValue.tipodocumentoidentidad);
+                if(newValue != null){
+                  guardarTipoDocumento(newValue.tipodocumentoidentidad);
+                  guardarTipoDocumentoCompleto(newValue.descripcion)
+                }
               }}
               options={TipoDocumentos}
               getOptionLabel={(option) => option.descripcion }
+              value ={{descripcion: TipoDocumentoCompleto ?? ""}}
               className={classes.w100}
               renderInput={(params) => (
                 <TextField
@@ -225,9 +285,10 @@ const GetStepContent = ({ step, handleNext }) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              id="NroDocumento"
+              id="NroDocumento" 
               label="Nro de Documento"
               variant="outlined"
+              defaultValue={Expediente.documentointeresado ?? ""}
               fullWidth
               onBlur={(event) => {
                 guardardocumentoInteresado(event.target.value);
@@ -240,13 +301,7 @@ const GetStepContent = ({ step, handleNext }) => {
               label="Nombre"
               variant="outlined"
               fullWidth
-              defaultValue=""
-              InputProps={{
-                readOnly: false,
-              }}
-              onBlur={(event) => {
-                guardarnresponsablelegal(event.target.value);
-              }}
+              value={DatosInteresado.nombre ?? ""}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -256,24 +311,31 @@ const GetStepContent = ({ step, handleNext }) => {
               variant="outlined"
               type="number"
               fullWidth
+              value={DatosInteresado.telefono ?? ""}
+              onBlur={(event) => {guardarTelefono(event.target.value);}}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField id="Email" label="Email" type="email" variant="outlined" fullWidth />
+            <TextField 
+            id="Email" label="Email" type="email" variant="outlined" 
+            fullWidth 
+            value={DatosInteresado.email ?? ""}
+            onBlur={(event) => {guardarEmail(event.target.value);}}
+            />
           </Grid>
         </>
       );
     case 2:
       return (
       <>
-
         {/* <form id="file" method="post" action="" encType="multipart/form-data"> */}
           <List dense>
             {Requisito.find(
               (req) => req.procedimiento == ProcedimientoSeleccionado.procedimiento
             ) && 
             Requisito.find((req) => req.procedimiento == ProcedimientoSeleccionado.procedimiento)
-              .procedimientos.map((req) => (
+              .procedimientos.map((req, index) => (
+
                   <ListItem key={req.procedimientorequisito}>
                   <ListItemIcon className={classes.iconReq}>
                     <AttachmentIcon />
@@ -290,28 +352,30 @@ const GetStepContent = ({ step, handleNext }) => {
                         justify="center"
                         alignItems="center">
                           <Grid item xs={12} sm={6}>
-                            {req.tbRequisito_descripcion}
+                            {req.tbRequisito_descripcion} {index}
                           </Grid>
                           <Grid item xs={12} sm={6}>
-                              
-                                <div className="dx-fieldset">
-                                </div>
-                                <div className="fileuploader-container">
-                                  <FileUploader selectButtonText="Seleccionar Archivo" labelText="" accept="image/*" uploadMode="useForm" />
-                                </div>
-                              
+                              <div className="dx-fieldset">
+                              </div>
+                              <div className="fileuploader-container">
+                                <FileUploader selectButtonText="Seleccionar Archivo" 
+                                onValueChanged={(event, value) => {
+                                      onSelectedFilesChanged(event,index);
+                                }}
+                                value = {typeof(selectedFiles.find( item => item.indice == index)) !== 'undefined' ?  selectedFiles.find( item => item.indice == index).archivo.value :[]}
+                                labelText="" accept="image/*" uploadMode="useForm" />
+                              </div>
                           </Grid>
                         </Grid>
-
                       </Typography>
                     }
                   />
                 </ListItem>
-              ))}
+              )
+            )}
 
           </List>
           {/* </form> */}
-
        </>
       );
     case 3:
