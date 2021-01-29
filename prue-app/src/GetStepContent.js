@@ -27,6 +27,9 @@ import FileUploader from 'devextreme-react/file-uploader';
 import Button from 'devextreme-react/button';
 import notify from 'devextreme/ui/notify';
 
+
+const axios = require('axios');
+
 const useStyles = makeStyles((theme) => ({
   mb1: {
     marginBottom: "1em",
@@ -87,14 +90,12 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
 
 //#endregion
 
-
-if(typeof(selectedFiles) !== 'undefined'){
+/*if(typeof(selectedFiles) !== 'undefined'){
   console.log("----------------------------------------------------------------")
   console.log(selectedFiles); 
   //console.log(selectedFiles.find( item => item.indice == 0)); 
   console.log("----------------------------------------------------------------")
-}
-
+}*/
 
   //Expediente
 //#region Expediente
@@ -147,7 +148,6 @@ if(typeof(selectedFiles) !== 'undefined'){
     }) 
   };
 
-
   const guardarTelefono= (item) => {
     setDatosInteresado(prevState => ({
         ...prevState,
@@ -161,14 +161,10 @@ if(typeof(selectedFiles) !== 'undefined'){
         email:  item
     }));
   };
-
   //#endregion
-
 
   const onSelectedFilesChanged = (e, index) => {
 
-
-    //console.log("******************************************************************")
     var archivos = { indice:index, archivo : e }
     let newArr = [...selectedFiles]; // copying the old datas array
     let indicegeneral = selectedFiles.findIndex( item => item.indice == index)
@@ -179,10 +175,66 @@ if(typeof(selectedFiles) !== 'undefined'){
     else{
       setselectedFiles(prevArray => [...prevArray, archivos])
     }
-    //console.log("******************************************************************")
+  };
 
-    /*var archivos = { indice:index, archivo : e }
-    setselectedFiles(prevArray => [...prevArray, archivos])*/
+  const onClick = () => {
+
+    /*var reformattedArray = selectedFiles.map(function(obj){
+        return obj.archivo.value;
+    });
+
+    console.log(reformattedArray);
+
+    //console.log(data)
+
+    console.log("archios");
+    //console.log(archivos);
+    const data = new FormData();
+    data.append('archivos', reformattedArray[0]);
+    console.log(data);
+
+    fetch('http://10.10.42.204:3010/api/subir-archivo', {
+      method: 'POST',
+      body: JSON.stringify(reformattedArray)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Archivo se subio");
+      // document.getElementById('resultado').innerHTML = 'El archivo ' + data.path + ' se ha subido correctamente.';
+    })
+    .catch(error => {
+      console.error(error);
+    });*/
+
+    var reformattedArray = selectedFiles.map(function(obj){
+        return obj.archivo.value;
+    });
+
+    console.log(reformattedArray);
+    const archivos = reformattedArray;
+    console.log("archios");
+    console.log(archivos);
+    const data = new FormData();
+
+    console.log(archivos[0])
+    data.append('archivo', archivos[0]);
+    console.log(data);
+
+    fetch('http://10.10.42.204:3010/api/subir-archivo', {
+        method: 'POST',
+        body: data
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Archivo se subio");
+        // document.getElementById('resultado').innerHTML = 'El archivo ' + data.path + ' se ha subido correctamente.';
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+
+
 
   }
 
@@ -379,7 +431,18 @@ if(typeof(selectedFiles) !== 'undefined'){
        </>
       );
     case 3:
-      return "Verificar";
+      return (
+        <>
+        <Button
+          id="subir"
+          variant="contained"
+          color="primary"
+          text="Subir Fotos"
+          onClick={onClick}
+          className={classes.button}
+        ></Button>
+        </>
+      );
     default:
       return "Desconocido";
   }
