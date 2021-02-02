@@ -52,11 +52,11 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
 
   const [DatosInteresado, setDatosInteresado] = useState({});
 
-  var nuevoExpediente = { procedimiento: "", expediente: "EXP2", documentointeresado: "", responsablelegal:"", descripcion:"", detalle_expediente:"", periodo:"", 
+  /*var nuevoExpediente = { procedimiento: "", expediente: "EXP2", documentointeresado: "", responsablelegal:"", descripcion:"", detalle_expediente:"", periodo:"", 
   observacion_expediente: "", estadoexpediente: 0, tipoprioridad: 1, tipodocumento: "", dependenciaorigen:"", dependenciadestino: "", usuarioatiende:"",
-  detalle_historialtramite: "", observacion_historialtramite:"", tipoestadohistorialtramite: 1, arreglo_historialarchivo:"", usuarioCreacion:""};
+  detalle_historialtramite: "", observacion_historialtramite:"", tipoestadohistorialtramite: 1, arreglo_historialarchivo:"", usuarioCreacion:""};*/
 
-  const [Expediente, setExpediente] = useState(nuevoExpediente);
+  const [Expediente, setExpediente] = useState({});
   const [selectedFiles, setselectedFiles] = useState([]);
 
 //#region useEffect
@@ -161,6 +161,14 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
         email:  item
     }));
   };
+
+  const guardarobservacionexpediente= (item) => {
+    setExpediente(prevState => ({
+        ...prevState,
+        observacion_expediente: item,
+        observacion_historialtramite: item
+    }));
+  };
   //#endregion
 
   const onSelectedFilesChanged = (e, index) => {
@@ -179,23 +187,25 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
 
   const onClick = () => {
 
-    /*var reformattedArray = selectedFiles.map(function(obj){
+    var reformattedArray = selectedFiles.map(function(obj){
         return obj.archivo.value;
     });
 
-    console.log(reformattedArray);
-
-    //console.log(data)
-
+    /*console.log(reformattedArray);
+    const archivos = reformattedArray;
     console.log("archios");
-    //console.log(archivos);
+    console.log(archivos);
     const data = new FormData();
-    data.append('archivos', reformattedArray[0]);
+
+    console.log(archivos[0])
+    data.append('archivo', archivos[0]);
     console.log(data);
 
+
     fetch('http://10.10.42.204:3010/api/subir-archivo', {
+      headers: {},
       method: 'POST',
-      body: JSON.stringify(reformattedArray)
+      body: data
     })
     .then(response => response.json())
     .then(data => {
@@ -206,35 +216,58 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
       console.error(error);
     });*/
 
-    var reformattedArray = selectedFiles.map(function(obj){
-        return obj.archivo.value;
-    });
+    //var ExpedienteExterno = {}
+    
+    //var nuevoExpediente = {};
 
-    console.log(reformattedArray);
-    const archivos = reformattedArray;
-    console.log("archios");
-    console.log(archivos);
-    const data = new FormData();
+    var cadena_archivos = ""
+    for (let index = 0; index < reformattedArray.length; index++) {
+      const element = reformattedArray[index];
+      cadena_archivos = cadena_archivos + element[0].name + "," + element[0].name.substr(element[0].name .lastIndexOf('.') + 1) + ","
+    }
+    //console.log(cadena_archivos)
 
-    console.log(archivos[0])
-    data.append('archivo', archivos[0]);
-    console.log(data);
+    setExpediente(prevState => ({
+        ...prevState,
+        expediente: "EXP2",
+        descripcion: "",
+        detalle_expediente: "",
+        periodo: new Date().getFullYear(),
+        estadoexpediente: 1,
+        tipoprioridad: 1,
+        usuarioatiende: "Tramite",
+        detalle_historialtramite: "",
+        tipoestadohistorialtramite: 1,
+        arreglo_historialarchivo: cadena_archivos,
+        usuarioCreacion: "Tramite"
+    }));
 
-    fetch('http://10.10.42.204:3010/api/subir-archivo', {
-        method: 'POST',
-        body: data
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log("Archivo se subio");
-        // document.getElementById('resultado').innerHTML = 'El archivo ' + data.path + ' se ha subido correctamente.';
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    var nuevoExpediente = {}
+    nuevoExpediente.procedimiento = Expediente.procedimiento
+    nuevoExpediente.expediente = "EXP2"
+    nuevoExpediente.documentointeresado  =  Expediente.documentointeresado
+    nuevoExpediente.responsablelegal = Expediente.responsablelegal
+    nuevoExpediente.descripcion =  Expediente.descripcion ?? ""
+    nuevoExpediente.detalle_expediente =  Expediente.detalle_expediente ?? ""
+    nuevoExpediente.periodo =  Expediente.periodo ?? new Date().getFullYear()
+    nuevoExpediente.observacion_expediente =  Expediente.observacion_expediente ?? ""
+    nuevoExpediente.estadoexpediente =  Expediente.estadoexpediente ?? 1
+    nuevoExpediente.tipoprioridad =  Expediente.tipoprioridad ?? 1
+    nuevoExpediente.tipodocumento =  Expediente.tipodocumento ?? ""
+    nuevoExpediente.usuarioatiende =  Expediente.usuarioatiende ?? "Tramite"
+    nuevoExpediente.detalle_historialtramite =  Expediente.detalle_historialtramite ?? ""
+    nuevoExpediente.observacion_historialtramite =  Expediente.observacion_historialtramite ?? ""
+    nuevoExpediente.tipoestadohistorialtramite =  Expediente.tipoestadohistorialtramite ?? 1
+    nuevoExpediente.arreglo_historialarchivo =  Expediente.arreglo_historialarchivo ?? cadena_archivos
+    nuevoExpediente.usuarioCreacion =  Expediente.usuarioCreacion ?? "Tramite"
 
+    dataAPI.guardarNuevoExpediente(nuevoExpediente).then((res)=>{ 
+      //setTipoDocumentos(res.data.result);
+      console.log("+++++++++++++++++++++++++++++++++")
+      console.log(res)
+    }) 
 
-
+    //dataAPI.guardarNuevoExpediente(nuevoExpediente);
 
   }
 
@@ -433,11 +466,24 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
     case 3:
       return (
         <>
+          <Grid item xs={12}>
+            <TextField
+              id="observacion_expediente" 
+              label="Observaciones"
+              variant="outlined"
+              fullWidth
+              defaultValue={Expediente.observacion_expediente ?? ""}
+              onBlur={(event) => {
+                guardarobservacionexpediente(event.target.value);
+              }}
+            />
+          </Grid>
+
         <Button
           id="subir"
           variant="contained"
           color="primary"
-          text="Subir Fotos"
+          text="Registrar Trámite"
           onClick={onClick}
           className={classes.button}
         ></Button>

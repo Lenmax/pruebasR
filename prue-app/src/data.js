@@ -347,3 +347,38 @@ export const tramite = {
   detalle: "",
   observacion: "",
 };
+
+export const guardarNuevoExpediente = (Expediente) => {
+
+  console.log(Expediente);
+  return axios.post(urltramite + 'Expediente', {
+    "jsonrpc": "2.0",
+    "method": "ExpedienteGuardarExterno",
+    "params": {
+      "body": {
+        "procedimiento": Expediente.procedimiento,
+        "expediente": Expediente.expediente,
+        "documentointeresado": Expediente.documentointeresado,
+        "responsablelegal": Expediente.responsablelegal,
+        "descripcion": Expediente.descripcion,
+        "detalle_expediente": Expediente.detalle_expediente,
+        "periodo": Expediente.periodo.toString(),
+        "observacion_expediente": Expediente.observacion_expediente,
+        "estadoexpediente": Expediente.estadoexpediente,
+        "tipoprioridad": Expediente.tipoprioridad,
+        "tipodocumento": Expediente.tipodocumento,
+        "dependenciaorigen": Expediente.dependenciaorigen,
+        "dependenciadestino": Expediente.dependenciadestino,
+        "usuarioatiende": Expediente.usuarioatiende,
+        "detalle_historialtramite": Expediente.detalle_historialtramite,
+        "observacion_historialtramite": Expediente.observacion_historialtramite,
+        "tipoestadohistorialtramite": Expediente.tipoestadohistorialtramite,
+        "arreglo_historialarchivo": Expediente.arreglo_historialarchivo,
+        "usuarioCreacion": Expediente.usuarioCreacion
+      }
+    },
+    "id": 2
+  })
+  .then(function (response) { return response;  })
+  .catch(function (error) { return error; });
+}
