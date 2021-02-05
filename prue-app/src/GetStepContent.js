@@ -69,7 +69,7 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
 
     if(step==2){
 
-      /*if(Expediente.tipodocumento === undefined || Expediente.tipodocumento === ""){
+      if(Expediente.tipodocumento === undefined || Expediente.tipodocumento === ""){
         handleset(1);
         notify('Seleccione el tipo de documento para continuar.');
       }
@@ -77,8 +77,10 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
         handleset(1);
         notify('Ingrese su documento de identidad para continuar.');
       }
-
-      console.log(Expediente,DatosInteresado);
+      else if(TipoDocumentos.find((req) => req.tipodocumentoidentidad ==(DatosInteresado.tipodocumentoidentidad == undefined ? Expediente.tipodocumento : DatosInteresado.tipodocumentoidentidad)  ).digitos != Expediente.documentointeresado.length){
+        handleset(1);
+        notify("El documento ingresado no es valido")
+      }
       if(Object.keys(DatosInteresado).length == 0) {
         handleset(1);
         notify('Ingrese sus datos para continuar.');
@@ -90,11 +92,11 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
       else if(DatosInteresado.telefono === undefined || DatosInteresado.telefono === ""){
         handleset(1);
         handleset('Ingrese su telefono para continuar.');
-      }*/
+      }
 
     }
 
-    /*if(step==3){
+    if(step==3){
       var cantidadrequisitos = Requisito.find((req) => req.procedimiento == ProcedimientoSeleccionado.procedimiento).procedimientos.length
       console.log(selectedFiles)
       console.log(cantidadrequisitos)
@@ -104,7 +106,7 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
         notify('Ingrese todos los documentos solicitados para continuar.');
       }
 
-    }*/
+    }
 
     console.log("de esta forma se ejecuta mas de una vez y se va acumulando");
   })
@@ -145,8 +147,6 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
 
 //#endregion
 
-console.log(TipoDocumentos)
-
   //Expediente
 //#region Expediente
 
@@ -167,19 +167,11 @@ console.log(TipoDocumentos)
   };
 
   const guardardocumentoInteresado= (item) => {
-    
-    var valido = true;
-    if(TipoDocumentos.find((req) => req.tipodocumentoidentidad == DatosInteresado.tipodocumentoidentidad).digitos != item.length){
-      valido=false;
-      notify("El dni ingresado no es valido")
-    }
-    if(valido){
       setExpediente(prevState => ({
           ...prevState,
           documentointeresado: item
       }));
       Buscarpersona(item)
-    }
   };
 
   const guardarTipoDocumentoCompleto= (item) => {
@@ -191,6 +183,8 @@ console.log(TipoDocumentos)
         ...prevState,
         responsablelegal: item
     }));
+    handleset(2);
+    handleset(1);
   };
 
   const Buscarpersona= (item) => {
@@ -232,6 +226,16 @@ console.log(TipoDocumentos)
         email:  item
     }));
   };
+
+
+  const guardarNombre= (item) => {
+    setDatosInteresado(prevState => ({
+        ...prevState,
+        nombre:  item
+    }));
+  };
+
+  
 
   const guardarobservacionexpediente= (item) => {
     setExpediente(prevState => ({
@@ -292,7 +296,7 @@ console.log(TipoDocumentos)
 
     var nuevoExpediente = {}
     nuevoExpediente.procedimiento = Expediente.procedimiento
-    nuevoExpediente.expediente = "EXP7"
+    nuevoExpediente.expediente = "EXP8"
     nuevoExpediente.documentointeresado  =  Expediente.documentointeresado
     nuevoExpediente.responsablelegal = Expediente.responsablelegal
     nuevoExpediente.descripcion =  Expediente.descripcion ?? ""
@@ -309,40 +313,58 @@ console.log(TipoDocumentos)
     nuevoExpediente.arreglo_historialarchivo =  Expediente.arreglo_historialarchivo ?? cadena_archivos
     nuevoExpediente.usuarioCreacion =  Expediente.usuarioCreacion ?? "Tramite"
 
+
+    var Persona = {}
+    Persona.dni = Expediente.documentointeresado
+    Persona.ubigeo = DatosInteresado.ubigeo ?? null
+    Persona.nombre = DatosInteresado.nombre ?? null 
+    Persona.tipodocumentoidentidad = Expediente.tipodocumento ?? null
+    Persona.direccion = DatosInteresado.direccion ?? null
+    Persona.telefono = DatosInteresado.telefono ?? null
+    Persona.email = DatosInteresado.email ?? null
+    Persona.genero = DatosInteresado.genero ?? null
+    Persona.estadocivil = DatosInteresado.estadocivil ?? null
+    Persona.fechanacimiento = DatosInteresado.fechanacimiento ?? null
+    Persona.ubigeonacimiento = DatosInteresado.ubigeonacimiento ?? null
+    Persona.fechadefuncion = DatosInteresado.fechadefuncion  ?? null
+    Persona.usuario = DatosInteresado.usuario ?? "tramite"
+    Persona.estado = DatosInteresado.estado ?? "A"
+
+
     const data = new FormData();
     // bucle for para los elementos files,para que estos pasen al servidor 
     for(let i = 0; i < reformattedArray.length ; i++){
       data.append('archivo',reformattedArray[i][0], fechaarchivo + "_" + reformattedArray[i][0].name)
     }
 
-
-
-
-
-    console.log(DatosInteresado);
-
-
-
-    /*fetch('http://10.10.42.204:4030/api/subir-archivo', {
+    fetch('http://10.10.42.204:4030/api/subir-archivo', {
         method: 'POST',
         body: data
       }) //.then(response => response.json())
     .then(data => {
       console.log("Archivo se subio correctamente", data);
       dataAPI.guardarNuevoExpediente(nuevoExpediente).then((res)=>{ 
-        handleset(0);
-        notify('Tramite guardado correctamente.');
+        if(res.estado == 1){
+          notify("Ocurrio un error al momento de guardar el tramite verifique sus datos y vuelva a intentarlo. " +"Error: " + res.mensaje)
+        }
+        else {
+          dataAPI.guardarNuevoPersona(Persona).then((persona)=>{ 
+            if(persona.estado == 1){
+              notify("Ocurrio un error al momento de guardar el tramite verifique sus datos y vuelva a intentarlo. " + persona.mensaje)
+            }
+            else{
+              handleset(0);
+              notify('Tramite guardado correctamente.');
+            }
+          })
+        }
       })
 
     })
     .catch(error => {
       console.error(error);
       notify("Error al subir lso archivos al servidor revise sus archivos he intente nuevamente.");
-    });*/
-
-
-
-
+    });
 
   }
 
@@ -459,7 +481,8 @@ console.log(TipoDocumentos)
               label="Nombre"
               variant="outlined"
               fullWidth
-              value={DatosInteresado.nombre ?? ""}
+              defaultValue={DatosInteresado.nombre ?? ""}
+              onBlur={(event) => {guardarNombre(event.target.value);}}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -469,6 +492,7 @@ console.log(TipoDocumentos)
               variant="outlined"
               type="number"
               fullWidth
+              //value={DatosInteresado.telefono}
               defaultValue={DatosInteresado.telefono ?? ""}
               onBlur={(event) => {guardarTelefono(event.target.value);}}
             />
@@ -477,6 +501,7 @@ console.log(TipoDocumentos)
             <TextField 
             id="Email" label="Email" type="email" variant="outlined" 
             fullWidth 
+            //value={DatosInteresado.email}
             defaultValue={DatosInteresado.email ?? ""}
             onBlur={(event) => {guardarEmail(event.target.value);}}
             />
@@ -537,7 +562,6 @@ console.log(TipoDocumentos)
     case 3:
       return (
         <>
-
           <Grid item xs={12} sm={12}>
             <Typography variant="h5" align="center">
               Resumen Expediente
@@ -619,10 +643,7 @@ console.log(TipoDocumentos)
 
           </List>
 
-
           </Grid>
-
-
           <Grid item xs={12}>
             <TextField
               id="observacion_expediente" 
@@ -635,14 +656,7 @@ console.log(TipoDocumentos)
               }}
             />
           </Grid>
-        {/* <Button
-          id="subir"
-          variant="contained"
-          color="primary"
-          text="Subir"
-          onClick={onClick}
-          className={classes.button}
-        ></Button> */}
+
           <Grid container item xs={12} justify="center">
             <Button
               onClick={ Retornar }

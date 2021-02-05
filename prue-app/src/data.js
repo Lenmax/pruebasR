@@ -340,7 +340,12 @@ export const Persona = (dni) => {
     "id": 2
   })
   .then(function (response) { return response;  })
-  .catch(function (error) { return error; });
+  .catch(function (error) { 
+    var errores = {}
+    errores.mensaje = error
+    errores.estado = 1
+    return errores; 
+  });
 }
 
 export const tramite = {
@@ -393,13 +398,18 @@ export const guardarNuevoExpediente = (Expediente) => {
     "id": 2
   })
   .then(function (response) { return response;  })
-  .catch(function (error) { return error; });
+  .catch(function (error) { 
+    var errores = {}
+    errores.mensaje = error
+    errores.estado = 1
+    return errores; 
+  });
 }
 
 export const guardarNuevoPersona = (Persona) => {
 
   console.log(Persona);
-  /*return axios.post(urltramite + 'Persona', {
+  return axios.post(urlgeneral + 'Persona', {
     "jsonrpc": "2.0",
     "method": "PersonaGuardar",
     "params": {
@@ -410,12 +420,12 @@ export const guardarNuevoPersona = (Persona) => {
         "tipodocumentoidentidad": Persona.tipodocumentoidentidad,
         "direccion": Persona.direccion,
         "telefono": Persona.telefono,
-        "email": Persona.email.toString(),
-        "genero": Persona.genero,
+        "email": Persona.email,
+        "genero": Persona.genero ?? "",
         "estadocivil": Persona.estadocivil,
         "fechanacimiento": Persona.fechanacimiento,
-        "ubigeonacimiento": Persona.ubigeonacimiento,
-        "fechadefuncion": Persona.fechadefuncion,
+        "ubigeonacimiento": Persona.ubigeonacimiento ?? "",
+        "fechadefuncion": Persona.fechadefuncion  ?? null,
         "usuario": Persona.usuario,
         "estado": Persona.estado
       }
@@ -423,5 +433,10 @@ export const guardarNuevoPersona = (Persona) => {
     "id": 1
   })
   .then(function (response) { return response;  })
-  .catch(function (error) { return error; });*/
+  .catch(function (error) { 
+    var errores = {}
+    errores.mensaje = error
+    errores.estado = 1
+    return errores; 
+  });
 }
