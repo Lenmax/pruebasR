@@ -16,6 +16,7 @@ import {
   ListItemIcon,
   ListItemText,
   TextField,
+  Button
 } from "@material-ui/core";
 
 import AttachmentIcon from "@material-ui/icons/Attachment";
@@ -24,11 +25,11 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 //import { requisitoTipoTramite } from "./data";
 import * as dataAPI from './data';
 import FileUploader from 'devextreme-react/file-uploader';
-import Button from 'devextreme-react/button';
+//import Button from 'devextreme-react/button';
 import notify from 'devextreme/ui/notify';
 
 
-const axios = require('axios');
+//const axios = require('axios');
 
 const useStyles = makeStyles((theme) => ({
   mb1: {
@@ -40,9 +41,17 @@ const useStyles = makeStyles((theme) => ({
   iconReq: {
     minWidth: "40px",
   },
+  root: {
+    justifyContent: 'center'
+  },
+  button: {
+    marginRight: theme.spacing(1),
+  }
+
 }));
 
-const GetStepContent = ({ step, handleNext, handleBack }) => {
+const GetStepContent = ({ step, handleNext, handleset }) => {
+
   const classes = useStyles();
   const [ProcedimientoSeleccionado, setProcedimientoSeleccionado] = useState({});
   const [TipoDocumentos, setTipoDocumentos] = useState([])
@@ -51,35 +60,81 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
   const [Requisito, setRequisito] = useState([]);
 
   const [DatosInteresado, setDatosInteresado] = useState({});
-
-  /*var nuevoExpediente = { procedimiento: "", expediente: "EXP2", documentointeresado: "", responsablelegal:"", descripcion:"", detalle_expediente:"", periodo:"", 
-  observacion_expediente: "", estadoexpediente: 0, tipoprioridad: 1, tipodocumento: "", dependenciaorigen:"", dependenciadestino: "", usuarioatiende:"",
-  detalle_historialtramite: "", observacion_historialtramite:"", tipoestadohistorialtramite: 1, arreglo_historialarchivo:"", usuarioCreacion:""};*/
-
   const [Expediente, setExpediente] = useState({});
   const [selectedFiles, setselectedFiles] = useState([]);
 
 //#region useEffect
 
   useEffect(() => {
+
+    if(step==2){
+
+      /*if(Expediente.tipodocumento === undefined || Expediente.tipodocumento === ""){
+        handleset(1);
+        notify('Seleccione el tipo de documento para continuar.');
+      }
+      else if(Expediente.documentointeresado === undefined || Expediente.documentointeresado === ""){
+        handleset(1);
+        notify('Ingrese su documento de identidad para continuar.');
+      }
+
+      console.log(Expediente,DatosInteresado);
+      if(Object.keys(DatosInteresado).length == 0) {
+        handleset(1);
+        notify('Ingrese sus datos para continuar.');
+      }
+      else if(DatosInteresado.email === undefined || DatosInteresado.email === ""){
+        handleset(1);
+        notify('Ingrese su email para continuar.');
+      }
+      else if(DatosInteresado.telefono === undefined || DatosInteresado.telefono === ""){
+        handleset(1);
+        handleset('Ingrese su telefono para continuar.');
+      }*/
+
+    }
+
+    /*if(step==3){
+      var cantidadrequisitos = Requisito.find((req) => req.procedimiento == ProcedimientoSeleccionado.procedimiento).procedimientos.length
+      console.log(selectedFiles)
+      console.log(cantidadrequisitos)
+
+      if(cantidadrequisitos != selectedFiles.length){
+        handleset(2);
+        notify('Ingrese todos los documentos solicitados para continuar.');
+      }
+
+    }*/
+
     console.log("de esta forma se ejecuta mas de una vez y se va acumulando");
   })
 
   useEffect(() => {
+
+    //validaciones
     dataAPI.tipoDocumento().then((res)=>{ 
-      setTipoDocumentos(res.data.result);
+      if(res.data.result != undefined)
+        setTipoDocumentos(res.data.result);
     }) 
     dataAPI.Procedimiento().then((res)=>{ 
-      setProcedimiento(res.data.result);
+      if(res.estado == 1) {
+        notify(res.mensaje);
+      }
+      else
+        setProcedimiento(res.data.result);
     }) 
     dataAPI.Requisito().then((res)=>{ 
-      var hash = res.data.result.reduce((p, c) => (p[c.procedimiento] ? p[c.procedimiento].push(c) : (p[c.procedimiento] = [c]), p), {}),
-      newhash = Object.keys(hash).map((k) => ({
-        procedimiento: k,
-        procedimientos: hash[k],
-      }));
-      console.log(newhash)
-      setRequisito(newhash);
+      if(res.estado == 1){
+        notify(res.mensaje);
+      }
+      else {
+        var hash = res.data.result.reduce((p, c) => (p[c.procedimiento] ? p[c.procedimiento].push(c) : (p[c.procedimiento] = [c]), p), {}),
+        newhash = Object.keys(hash).map((k) => ({
+          procedimiento: k,
+          procedimientos: hash[k],
+        }));
+        setRequisito(newhash);
+      }
     }) 
 
     console.log("de esta forma solo se ejecuta una vez");
@@ -90,12 +145,7 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
 
 //#endregion
 
-/*if(typeof(selectedFiles) !== 'undefined'){
-  console.log("----------------------------------------------------------------")
-  console.log(selectedFiles); 
-  //console.log(selectedFiles.find( item => item.indice == 0)); 
-  console.log("----------------------------------------------------------------")
-}*/
+console.log(TipoDocumentos)
 
   //Expediente
 //#region Expediente
@@ -115,12 +165,21 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
         tipodocumento: item
     }));
   };
+
   const guardardocumentoInteresado= (item) => {
-    setExpediente(prevState => ({
-        ...prevState,
-        documentointeresado: item
-    }));
-    Buscarpersona(item)
+    
+    var valido = true;
+    if(TipoDocumentos.find((req) => req.tipodocumentoidentidad == DatosInteresado.tipodocumentoidentidad).digitos != item.length){
+      valido=false;
+      notify("El dni ingresado no es valido")
+    }
+    if(valido){
+      setExpediente(prevState => ({
+          ...prevState,
+          documentointeresado: item
+      }));
+      Buscarpersona(item)
+    }
   };
 
   const guardarTipoDocumentoCompleto= (item) => {
@@ -136,12 +195,24 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
 
   const Buscarpersona= (item) => {
     dataAPI.Persona(item).then((res)=>{ 
+      //console.log(res.data.result)
       if(res.data.result.length != 0){
         setDatosInteresado(prevState => ({
             ...prevState,
+            dni: res.data.result[0].dni,
+            ubigeo: res.data.result[0].ubigeo,
             nombre: res.data.result[0].nombre,
+            tipodocumentoidentidad: res.data.result[0].tipodocumentoidentidad,
+            direccion : res.data.result[0].direccion,
             telefono:  res.data.result[0].telefono,
-            email: res.data.result[0].email
+            email: res.data.result[0].email,
+            genero: res.data.result[0].genero,
+            estadocivil: res.data.result[0].estadocivil,
+            fechanacimiento: res.data.result[0].fechanacimiento,
+            ubigeonacimiento: res.data.result[0].ubigeonacimiento,
+            fechadefuncion: res.data.result[0].fechadefuncion,
+            usuario: res.data.result[0].usuario,
+            estado: res.data.result[0].estado
         }));
         guardarresponsablelegal(res.data.result[0].nombre)
       }
@@ -169,7 +240,6 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
         observacion_historialtramite: item
     }));
   };
-  //#endregion
 
   const onSelectedFilesChanged = (e, index) => {
 
@@ -184,52 +254,30 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
       setselectedFiles(prevArray => [...prevArray, archivos])
     }
   };
+  //#endregion
+
+  const Retornar = () => {
+    handleset(2);
+  };
 
   const onClick = () => {
 
+    var fechaarchivo = new Date().getTime().toString();
     var reformattedArray = selectedFiles.map(function(obj){
         return obj.archivo.value;
     });
 
-    /*console.log(reformattedArray);
-    const archivos = reformattedArray;
-    console.log("archios");
-    console.log(archivos);
-    const data = new FormData();
 
-    console.log(archivos[0])
-    data.append('archivo', archivos[0]);
-    console.log(data);
-
-
-    fetch('http://10.10.42.204:3010/api/subir-archivo', {
-      headers: {},
-      method: 'POST',
-      body: data
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log("Archivo se subio");
-      // document.getElementById('resultado').innerHTML = 'El archivo ' + data.path + ' se ha subido correctamente.';
-    })
-    .catch(error => {
-      console.error(error);
-    });*/
-
-    //var ExpedienteExterno = {}
-    
-    //var nuevoExpediente = {};
 
     var cadena_archivos = ""
     for (let index = 0; index < reformattedArray.length; index++) {
       const element = reformattedArray[index];
-      cadena_archivos = cadena_archivos + element[0].name + "," + element[0].name.substr(element[0].name .lastIndexOf('.') + 1) + ","
+      cadena_archivos = cadena_archivos + fechaarchivo + "_" + element[0].name + "," + element[0].name.substr(element[0].name .lastIndexOf('.') + 1) + ","
     }
-    //console.log(cadena_archivos)
 
     setExpediente(prevState => ({
         ...prevState,
-        expediente: "EXP2",
+        expediente: "EXP6",
         descripcion: "",
         detalle_expediente: "",
         periodo: new Date().getFullYear(),
@@ -244,7 +292,7 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
 
     var nuevoExpediente = {}
     nuevoExpediente.procedimiento = Expediente.procedimiento
-    nuevoExpediente.expediente = "EXP2"
+    nuevoExpediente.expediente = "EXP7"
     nuevoExpediente.documentointeresado  =  Expediente.documentointeresado
     nuevoExpediente.responsablelegal = Expediente.responsablelegal
     nuevoExpediente.descripcion =  Expediente.descripcion ?? ""
@@ -261,13 +309,40 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
     nuevoExpediente.arreglo_historialarchivo =  Expediente.arreglo_historialarchivo ?? cadena_archivos
     nuevoExpediente.usuarioCreacion =  Expediente.usuarioCreacion ?? "Tramite"
 
-    dataAPI.guardarNuevoExpediente(nuevoExpediente).then((res)=>{ 
-      //setTipoDocumentos(res.data.result);
-      console.log("+++++++++++++++++++++++++++++++++")
-      console.log(res)
-    }) 
+    const data = new FormData();
+    // bucle for para los elementos files,para que estos pasen al servidor 
+    for(let i = 0; i < reformattedArray.length ; i++){
+      data.append('archivo',reformattedArray[i][0], fechaarchivo + "_" + reformattedArray[i][0].name)
+    }
 
-    //dataAPI.guardarNuevoExpediente(nuevoExpediente);
+
+
+
+
+    console.log(DatosInteresado);
+
+
+
+    /*fetch('http://10.10.42.204:4030/api/subir-archivo', {
+        method: 'POST',
+        body: data
+      }) //.then(response => response.json())
+    .then(data => {
+      console.log("Archivo se subio correctamente", data);
+      dataAPI.guardarNuevoExpediente(nuevoExpediente).then((res)=>{ 
+        handleset(0);
+        notify('Tramite guardado correctamente.');
+      })
+
+    })
+    .catch(error => {
+      console.error(error);
+      notify("Error al subir lso archivos al servidor revise sus archivos he intente nuevamente.");
+    });*/
+
+
+
+
 
   }
 
@@ -329,9 +404,7 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
                               </ListItem>
                               ))}
                         </List>
-                        
-                      </TableCell>
-
+                        </TableCell>
                       <TableCell aling="center">
                         {item.tiempoestimado}
                       </TableCell>
@@ -396,7 +469,7 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
               variant="outlined"
               type="number"
               fullWidth
-              value={DatosInteresado.telefono ?? ""}
+              defaultValue={DatosInteresado.telefono ?? ""}
               onBlur={(event) => {guardarTelefono(event.target.value);}}
             />
           </Grid>
@@ -404,7 +477,7 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
             <TextField 
             id="Email" label="Email" type="email" variant="outlined" 
             fullWidth 
-            value={DatosInteresado.email ?? ""}
+            defaultValue={DatosInteresado.email ?? ""}
             onBlur={(event) => {guardarEmail(event.target.value);}}
             />
           </Grid>
@@ -413,7 +486,6 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
     case 2:
       return (
       <>
-        {/* <form id="file" method="post" action="" encType="multipart/form-data"> */}
           <List dense>
             {Requisito.find(
               (req) => req.procedimiento == ProcedimientoSeleccionado.procedimiento
@@ -437,15 +509,15 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
                         justify="center"
                         alignItems="center">
                           <Grid item xs={12} sm={6}>
-                            {req.tbRequisito_descripcion} {index}
+                            {req.tbRequisito_descripcion}
                           </Grid>
                           <Grid item xs={12} sm={6}>
                               <div className="dx-fieldset">
                               </div>
                               <div className="fileuploader-container">
                                 <FileUploader selectButtonText="Seleccionar Archivo" 
-                                onValueChanged={(event, value) => {
-                                      onSelectedFilesChanged(event,index);
+                                onValueChanged={(event) => {
+                                  onSelectedFilesChanged(event,index);
                                 }}
                                 value = {typeof(selectedFiles.find( item => item.indice == index)) !== 'undefined' ?  selectedFiles.find( item => item.indice == index).archivo.value :[]}
                                 labelText="" accept="image/*" uploadMode="useForm" />
@@ -460,12 +532,97 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
             )}
 
           </List>
-          {/* </form> */}
        </>
       );
     case 3:
       return (
         <>
+
+          <Grid item xs={12} sm={12}>
+            <Typography variant="h5" align="center">
+              Resumen Expediente
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={12}>
+            <Typography variant="h6" align="left">
+               Procedimiento: {ProcedimientoSeleccionado.denominacion}
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={12}>
+            <Typography variant="h6" align="left">
+               Datos Personales:
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={12}>
+            <Typography variant="subtitle2" align="left">
+               Nombre completo: {DatosInteresado.nombre}
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <Typography variant="subtitle2" align="left">
+               Teléfono: {DatosInteresado.telefono}
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <Typography variant="subtitle2" align="left">
+               Correo Electrónico: {DatosInteresado.email}
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={12}>
+            <Typography variant="h6" align="left">
+              Requisitos:
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={12}>
+          <List dense>
+            {Requisito.find(
+              (req) => req.procedimiento == ProcedimientoSeleccionado.procedimiento
+            ) && 
+            Requisito.find((req) => req.procedimiento == ProcedimientoSeleccionado.procedimiento)
+              .procedimientos.map((req, index) => (
+
+                  <ListItem key={req.procedimientorequisito}>
+                  <ListItemIcon className={classes.iconReq}>
+                    <AttachmentIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    secondary={
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        color="textPrimary"
+                      >
+                        <Grid 
+                        container 
+                        justify="center"
+                        alignItems="center">
+                          <Grid item xs={12} sm={6}>
+                            {req.tbRequisito_descripcion} 
+                          </Grid>
+                          <Grid item xs={12} sm={6}>
+                            {typeof(selectedFiles.find( item => item.indice == index)) !== 'undefined' ?  selectedFiles.find( item => item.indice == index).archivo.value[0].name : ""}
+                          </Grid>
+                        </Grid>
+                      </Typography>
+                    }
+                  />
+                </ListItem>
+              )
+            )}
+
+          </List>
+
+
+          </Grid>
+
+
           <Grid item xs={12}>
             <TextField
               id="observacion_expediente" 
@@ -478,15 +635,28 @@ const GetStepContent = ({ step, handleNext, handleBack }) => {
               }}
             />
           </Grid>
-
-        <Button
+        {/* <Button
           id="subir"
           variant="contained"
           color="primary"
-          text="Registrar Trámite"
+          text="Subir"
           onClick={onClick}
           className={classes.button}
-        ></Button>
+        ></Button> */}
+          <Grid container item xs={12} justify="center">
+            <Button
+              onClick={ Retornar }
+              className={classes.button}
+            >  {"Paso Anterior"} </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={onClick}
+              className={classes.button}
+            >
+              {"Finalizar"}
+            </Button>
+          </Grid>
         </>
       );
     default:

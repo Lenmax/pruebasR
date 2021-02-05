@@ -15,9 +15,9 @@ import {
   StepLabel,
   withStyles,
   StepConnector,
-  StepContent,
+  //StepContent,
   Button,
-  TableContainer,
+  /*TableContainer,
   Table,
   TableHead,
   TableRow,
@@ -29,19 +29,16 @@ import {
   ListItemIcon,
   ListItemText,
   Chip,
-  TextField,
+  TextField,*/
 } from "@material-ui/core";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
-import AttachmentIcon from "@material-ui/icons/Attachment";
+//import AttachmentIcon from "@material-ui/icons/Attachment";
 
-import Autocomplete from "@material-ui/lab/Autocomplete";
+//import Autocomplete from "@material-ui/lab/Autocomplete";
 import GetStepContent from "./GetStepContent";
-
-import * as dataAPI from './data';
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -111,6 +108,7 @@ const useColorlibStepIconStyles = makeStyles({
       "linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)",
   },
 });
+
 function ColorlibStepIcon(props) {
   const classes = useColorlibStepIconStyles();
   const { active, completed } = props;
@@ -143,129 +141,6 @@ function getSteps() {
   ];
 }
 
-const getStepContent = (step, handleNext) => {
-  switch (step) {
-    case 0:
-      return (
-        <>
-          <Grid item xs={12} style={{ marginBottom: "1em" }}>
-            <Typography variant="subtitle2" align="right">
-              Buscador
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">Codigo</TableCell>
-                    <TableCell align="center">Tramite</TableCell>
-                    <TableCell align="center">Requisitos</TableCell>
-                    <TableCell align="center">Tiempo Estimado</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow hover onClick={handleNext}>
-                    <TableCell align="center">0125489</TableCell>
-                    <TableCell>Certificado de Estudios</TableCell>
-                    <TableCell>
-                      <List dense>
-                        <ListItem>
-                          <ListItemIcon>
-                            <AttachmentIcon />
-                          </ListItemIcon>
-                          <ListItemText primary="Solicitud Dirigida al Rector" />
-                        </ListItem>
-                        <ListItem>
-                          <ListItemIcon>
-                            <AttachmentIcon />
-                          </ListItemIcon>
-                          <ListItemText primary="Certificados de estudios secundarios conscluidos en original" />
-                        </ListItem>
-                        <ListItem>
-                          <ListItemIcon>
-                            <AttachmentIcon />
-                          </ListItemIcon>
-                          <ListItemText primary="Certificado de acreditacion expendio..." />
-                        </ListItem>
-                        <ListItem>
-                          <ListItemIcon>
-                            <AttachmentIcon />
-                          </ListItemIcon>
-                          <ListItemText primary="Certificado electronco de no tener atecendentes penales" />
-                        </ListItem>
-                      </List>
-                    </TableCell>
-                    <TableCell align="center">80 minutos</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Grid>
-        </>
-      );
-    case 1:
-      return (
-        <>
-          <Grid item md={6}>
-            <Autocomplete
-              id="TipoDocumento"
-              options={tipoDocumentos}
-              getOptionLabel={(option) => option.tipodocumentoidentidad}
-              style={{ width: "100%" }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Tipo Documento"
-                  variant="outlined"
-                />
-              )}
-            />
-          </Grid>
-          <Grid item md={6}>
-            <TextField
-              id="NroDocumento"
-              label="Nro de Documento"
-              variant="outlined"
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              id="Nombre"
-              label="Nombre"
-              variant="outlined"
-              fullWidth
-              defaultValue="Nombre Completo"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-          </Grid>
-          <Grid item md={6}>
-            <TextField
-              id="Telefono"
-              label="Telefono"
-              variant="outlined"
-              fullWidth
-            />
-          </Grid>
-          <Grid item md={6}>
-            <TextField id="Email" label="Email" variant="outlined" fullWidth />
-          </Grid>
-        </>
-      );
-    case 2:
-      return "Adjuntar Requisitos";
-    case 3:
-      return "Verificar";
-    default:
-      return "Desconocido";
-  }
-};
-
-
-let tipoDocumentos = [];
 const App = () => {
   const classes = useStyles();
 
@@ -278,6 +153,10 @@ const App = () => {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const sethandle = (step) => {
+    setActiveStep(step);
   };
 
   const handleReset = () => {
@@ -322,7 +201,7 @@ const App = () => {
                           onClick={handleReset}
                           className={classes.button}
                         >
-                          Reset
+                          Nuevo tramite
                         </Button>
                       </div>
                     ) : (
@@ -339,17 +218,23 @@ const App = () => {
                           <GetStepContent
                             step={activeStep}
                             handleNext={handleNext}
+                            handleset={sethandle}
                           />
                         </Grid>
+                        
+                        {activeStep != 3 && (
                         <Grid container item xs={12} justify="center">
                           <Button
                             disabled={activeStep === 0}
-                            onClick={handleBack}
+                            onClick={
+                              handleBack
+                            }
                             className={classes.button}
                           >
                             Paso Anterior
                           </Button>
                           <Button
+                            disabled={activeStep === 0}
                             variant="contained"
                             color="primary"
                             onClick={handleNext}
@@ -360,6 +245,8 @@ const App = () => {
                               : "Siguiente"}
                           </Button>
                         </Grid>
+                        )}
+
                       </Grid>
                     )}
                   </>

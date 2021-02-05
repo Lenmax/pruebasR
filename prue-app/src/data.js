@@ -125,13 +125,19 @@ export const  tipoDocumento = () => {
       "body": {
         "tipodocumentoidentidad": null,
         "descripcion": null,
-        "estado": null
+        "estado": null,
+        "digitos": null
       }
     },
     "id": 1
   })
   .then(function (response) { return response;  })
-  .catch(function (error) { return error; });
+  .catch(function (error) { 
+    var errores = {}
+    errores.mensaje = error
+    errores.estado = 1
+    return errores; 
+  });
 }
 /*export const tipoDocumento = [
   {
@@ -180,7 +186,12 @@ export const  Procedimiento = () => {
     "id": 2
   })
   .then(function (response) { return response;  })
-  .catch(function (error) { return error; });
+  .catch(function (error) { 
+    var errores = {}
+    errores.mensaje = error
+    errores.estado = 1
+    return errores; 
+  });
 }
 /*export const tipoTramite = [
   {
@@ -264,7 +275,12 @@ export const  Requisito = () => {
     "id": 2
   })
   .then(function (response) { return response;  })
-  .catch(function (error) { return error; });
+  .catch(function (error) { 
+    var errores = {}
+    errores.mensaje = error
+    errores.estado = 1
+    return errores; 
+  });
 }
 /*export const requisitoTipoTramite = [
   {
@@ -312,7 +328,6 @@ export const  Requisito = () => {
   },
 ];*/
 
-
 export const Persona = (dni) => {
   return axios.post(urlgeneral + 'Persona', {
     "jsonrpc": "2.0",
@@ -327,7 +342,6 @@ export const Persona = (dni) => {
   .then(function (response) { return response;  })
   .catch(function (error) { return error; });
 }
-
 
 export const tramite = {
   _id: "0",
@@ -350,7 +364,6 @@ export const tramite = {
 
 export const guardarNuevoExpediente = (Expediente) => {
 
-  console.log(Expediente);
   return axios.post(urltramite + 'Expediente', {
     "jsonrpc": "2.0",
     "method": "ExpedienteGuardarExterno",
@@ -381,4 +394,34 @@ export const guardarNuevoExpediente = (Expediente) => {
   })
   .then(function (response) { return response;  })
   .catch(function (error) { return error; });
+}
+
+export const guardarNuevoPersona = (Persona) => {
+
+  console.log(Persona);
+  /*return axios.post(urltramite + 'Persona', {
+    "jsonrpc": "2.0",
+    "method": "PersonaGuardar",
+    "params": {
+      "body": {
+        "dni": Persona.dni,
+        "ubigeo": Persona.ubigeo,
+        "nombre": Persona.nombre,
+        "tipodocumentoidentidad": Persona.tipodocumentoidentidad,
+        "direccion": Persona.direccion,
+        "telefono": Persona.telefono,
+        "email": Persona.email.toString(),
+        "genero": Persona.genero,
+        "estadocivil": Persona.estadocivil,
+        "fechanacimiento": Persona.fechanacimiento,
+        "ubigeonacimiento": Persona.ubigeonacimiento,
+        "fechadefuncion": Persona.fechadefuncion,
+        "usuario": Persona.usuario,
+        "estado": Persona.estado
+      }
+    },
+    "id": 1
+  })
+  .then(function (response) { return response;  })
+  .catch(function (error) { return error; });*/
 }
