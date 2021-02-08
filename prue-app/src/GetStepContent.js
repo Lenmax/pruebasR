@@ -97,15 +97,13 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
     }
 
     if(step==3){
-      var cantidadrequisitos = Requisito.find((req) => req.procedimiento == ProcedimientoSeleccionado.procedimiento).procedimientos.length
-      console.log(selectedFiles)
-      console.log(cantidadrequisitos)
-
-      if(cantidadrequisitos != selectedFiles.length){
-        handleset(2);
-        notify('Ingrese todos los documentos solicitados para continuar.');
+      if(Requisito.find((req) => req.procedimiento == ProcedimientoSeleccionado.procedimiento) != undefined){
+        var cantidadrequisitos = Requisito.find((req) => req.procedimiento == ProcedimientoSeleccionado.procedimiento).procedimientos.length
+        if(cantidadrequisitos != selectedFiles.length){
+          handleset(2);
+          notify('Ingrese todos los documentos solicitados para continuar.');
+        }
       }
-
     }
 
     console.log("de esta forma se ejecuta mas de una vez y se va acumulando");
@@ -296,7 +294,7 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
 
     var nuevoExpediente = {}
     nuevoExpediente.procedimiento = Expediente.procedimiento
-    nuevoExpediente.expediente = "EXP8"
+    nuevoExpediente.expediente = "EXP9"
     nuevoExpediente.documentointeresado  =  Expediente.documentointeresado
     nuevoExpediente.responsablelegal = Expediente.responsablelegal
     nuevoExpediente.descripcion =  Expediente.descripcion ?? ""
@@ -353,8 +351,15 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
               notify("Ocurrio un error al momento de guardar el tramite verifique sus datos y vuelva a intentarlo. " + persona.mensaje)
             }
             else{
+
+              setProcedimientoSeleccionado({});
+              setTipoDocumentoCompleto("");
+              setDatosInteresado({});
+              setExpediente({});
+              setselectedFiles([]);
+
               handleset(0);
-              notify('Tramite guardado correctamente.');
+              notify('Tramite guardado correctamente Su expediente es.' + nuevoExpediente.expediente);
             }
           })
         }
