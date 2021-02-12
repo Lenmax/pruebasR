@@ -1,7 +1,7 @@
-const axios = require('axios');
+const axios = require("axios");
 
-const urltramite = 'http://10.10.42.204:4020/api/';
-const urlgeneral = 'http://10.10.42.204:4010/api/';
+const urltramite = "http://10.10.42.204:4020/api/";
+const urlgeneral = "http://10.10.42.204:4010/api/";
 
 export const Links = [
   {
@@ -51,7 +51,6 @@ export const employee = {
   Mobile: "555-684-1335",
   Email: "jheart@dx-email.com",
   Skype: "jheart_DX_skype",
-
 };
 
 export const positions = [
@@ -117,28 +116,31 @@ export const states = [
   "WY",
 ];
 
-export const  tipoDocumento = () => {
-  return axios.post(urlgeneral + 'TipoDocumentoIdentidad', {
-    "jsonrpc": "2.0",
-    "method": "TipoDocumentoIdentidadlistarpor",
-    "params": {
-      "body": {
-        "tipodocumentoidentidad": null,
-        "descripcion": null,
-        "estado": null,
-        "digitos": null
-      }
-    },
-    "id": 1
-  })
-  .then(function (response) { return response;  })
-  .catch(function (error) { 
-    var errores = {}
-    errores.mensaje = error
-    errores.estado = 1
-    return errores; 
-  });
-}
+export const tipoDocumento = () => {
+  return axios
+    .post(urlgeneral + "TipoDocumentoIdentidad", {
+      jsonrpc: "2.0",
+      method: "TipoDocumentoIdentidadlistarpor",
+      params: {
+        body: {
+          tipodocumentoidentidad: null,
+          descripcion: null,
+          estado: null,
+          digitos: null,
+        },
+      },
+      id: 1,
+    })
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      var errores = {};
+      errores.mensaje = error;
+      errores.estado = 1;
+      return errores;
+    });
+};
 /*export const tipoDocumento = [
   {
     _id: "5fd36f3a5b79009813640430",
@@ -167,32 +169,35 @@ export const  tipoDocumento = () => {
   },
 ];*/
 
-export const  Procedimiento = () => {
-  return axios.post(urltramite + 'Procedimiento', {
-    "jsonrpc": "2.0",
-    "method": "Procedimientolistarpor",
-    "params": {
-      "body": {
-          "procedimiento": null,
-          "denominacion": null,
-          "tiempoestimado": null,
-          "observacion": null,
-          "codigo": null,
-          "categoria": null,
-          "baselegal": null,
-          "estado": null
-      }
-    },
-    "id": 2
-  })
-  .then(function (response) { return response;  })
-  .catch(function (error) { 
-    var errores = {}
-    errores.mensaje = error
-    errores.estado = 1
-    return errores; 
-  });
-}
+export const Procedimiento = () => {
+  return axios
+    .post(urltramite + "Procedimiento", {
+      jsonrpc: "2.0",
+      method: "Procedimientolistarpor",
+      params: {
+        body: {
+          procedimiento: null,
+          denominacion: null,
+          tiempoestimado: null,
+          observacion: null,
+          codigo: null,
+          categoria: null,
+          baselegal: null,
+          estado: null,
+        },
+      },
+      id: 2,
+    })
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      var errores = {};
+      errores.mensaje = error;
+      errores.estado = 1;
+      return errores;
+    });
+};
 /*export const tipoTramite = [
   {
     _id: "5fc7a24aae0fcc13b0a8aafb",
@@ -214,7 +219,6 @@ export const  Procedimiento = () => {
     tiempoEstimado: "24h",
   },
 ];*/
-
 
 export const rutaTipoTramite = [
   {
@@ -257,31 +261,33 @@ export const rutaTipoTramite = [
   },
 ];
 
-
-export const  Requisito = () => {
-  return axios.post(urltramite + 'ProcedimientoRequisito', {
-    "jsonrpc": "2.0",
-    "method": "ProcedimientoRequisitolistarpor",
-    "params": {
-      "body": {
-          "procedimientorequisito": null,
-          "requisito": null,
-          "procedimiento": null,
-          "descripcion": null,
-          "urlformato": null,
-          "estado": null
-      }
-    },
-    "id": 2
-  })
-  .then(function (response) { return response;  })
-  .catch(function (error) { 
-    var errores = {}
-    errores.mensaje = error
-    errores.estado = 1
-    return errores; 
-  });
-}
+export const Requisito = () => {
+  return axios
+    .post(urltramite + "ProcedimientoRequisito", {
+      jsonrpc: "2.0",
+      method: "ProcedimientoRequisitolistarpor",
+      params: {
+        body: {
+          procedimientorequisito: null,
+          requisito: null,
+          procedimiento: null,
+          descripcion: null,
+          urlformato: null,
+          estado: null,
+        },
+      },
+      id: 2,
+    })
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      var errores = {};
+      errores.mensaje = error;
+      errores.estado = 1;
+      return errores;
+    });
+};
 /*export const requisitoTipoTramite = [
   {
     _idtipoTramite: "5fc7a24aae0fcc13b0a8aafb",
@@ -329,24 +335,27 @@ export const  Requisito = () => {
 ];*/
 
 export const Persona = (dni) => {
-  return axios.post(urlgeneral + 'Persona', {
-    "jsonrpc": "2.0",
-    "method": "PersonaRecuperar",
-    "params": {
-      "body": {
-          "dni": dni
-      }
-    },
-    "id": 2
-  })
-  .then(function (response) { return response;  })
-  .catch(function (error) { 
-    var errores = {}
-    errores.mensaje = error
-    errores.estado = 1
-    return errores; 
-  });
-}
+  return axios
+    .post(urlgeneral + "Persona", {
+      jsonrpc: "2.0",
+      method: "PersonaRecuperar",
+      params: {
+        body: {
+          dni: dni,
+        },
+      },
+      id: 2,
+    })
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      var errores = {};
+      errores.mensaje = error;
+      errores.estado = 1;
+      return errores;
+    });
+};
 
 export const tramite = {
   _id: "0",
@@ -368,75 +377,77 @@ export const tramite = {
 };
 
 export const guardarNuevoExpediente = (Expediente) => {
-
-  return axios.post(urltramite + 'Expediente', {
-    "jsonrpc": "2.0",
-    "method": "ExpedienteGuardarExterno",
-    "params": {
-      "body": {
-        "procedimiento": Expediente.procedimiento,
-        "expediente": Expediente.expediente,
-        "documentointeresado": Expediente.documentointeresado,
-        "responsablelegal": Expediente.responsablelegal,
-        "descripcion": Expediente.descripcion,
-        "detalle_expediente": Expediente.detalle_expediente,
-        "periodo": Expediente.periodo.toString(),
-        "observacion_expediente": Expediente.observacion_expediente,
-        "estadoexpediente": Expediente.estadoexpediente,
-        "tipoprioridad": Expediente.tipoprioridad,
-        "tipodocumento": Expediente.tipodocumento,
-        "dependenciaorigen": Expediente.dependenciaorigen,
-        "dependenciadestino": Expediente.dependenciadestino,
-        "usuarioatiende": Expediente.usuarioatiende,
-        "detalle_historialtramite": Expediente.detalle_historialtramite,
-        "observacion_historialtramite": Expediente.observacion_historialtramite,
-        "tipoestadohistorialtramite": Expediente.tipoestadohistorialtramite,
-        "arreglo_historialarchivo": Expediente.arreglo_historialarchivo,
-        "usuarioCreacion": Expediente.usuarioCreacion
-      }
-    },
-    "id": 2
-  })
-  .then(function (response) { return response;  })
-  .catch(function (error) { 
-    var errores = {}
-    errores.mensaje = error
-    errores.estado = 1
-    return errores; 
-  });
-}
+  console.log(Expediente);
+  return axios
+    .post(urltramite + "Expediente", {
+      jsonrpc: "2.0",
+      method: "ExpedienteGuardarExterno",
+      params: {
+        procedimiento: Expediente.procedimiento,
+        expediente: Expediente.expediente,
+        documentointeresado: Expediente.documentointeresado,
+        responsablelegal: Expediente.responsablelegal,
+        descripcion: Expediente.descripcion,
+        detalle_expediente: Expediente.detalle_expediente,
+        periodo: Expediente.periodo.toString(),
+        observacion_expediente: Expediente.observacion_expediente,
+        estadoexpediente: Expediente.estadoexpediente,
+        tipoprioridad: Expediente.tipoprioridad,
+        tipodocumento: Expediente.tipodocumento,
+        dependenciaorigen: Expediente.dependenciaorigen,
+        dependenciadestino: Expediente.dependenciadestino,
+        usuarioatiende: Expediente.usuarioatiende,
+        detalle_historialexpediente: Expediente.detalle_historialexpediente,
+        observacion_historialexpediente:
+          Expediente.observacion_historialexpediente,
+        tipoestadohistorialexpediente: Expediente.tipoestadohistorialexpediente,
+        arreglo_historialarchivo: Expediente.arreglo_historialarchivo,
+        usuarioCreacion: Expediente.usuarioCreacion,
+      },
+      id: 2,
+    })
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      var errores = {};
+      errores.mensaje = error;
+      errores.estado = 1;
+      return errores;
+    });
+};
 
 export const guardarNuevoPersona = (Persona) => {
-
   console.log(Persona);
-  return axios.post(urlgeneral + 'Persona', {
-    "jsonrpc": "2.0",
-    "method": "PersonaGuardar",
-    "params": {
-      "body": {
-        "dni": Persona.dni,
-        "ubigeo": Persona.ubigeo,
-        "nombre": Persona.nombre,
-        "tipodocumentoidentidad": Persona.tipodocumentoidentidad,
-        "direccion": Persona.direccion,
-        "telefono": Persona.telefono,
-        "email": Persona.email,
-        "genero": Persona.genero ?? "",
-        "estadocivil": Persona.estadocivil,
-        "fechanacimiento": Persona.fechanacimiento,
-        "ubigeonacimiento": Persona.ubigeonacimiento ?? "",
-        "fechadefuncion": Persona.fechadefuncion  ?? null,
-        "usuario": Persona.usuario,
-        "estado": Persona.estado
-      }
-    },
-    "id": 1
-  })
-  .then(function (response) { return response;  })
-  .catch(function (error) { 
-    var errores = {}
-    errores.mensaje = error
-    errores.estado = 1
-    return errores; 
-  });
-}
+  return axios
+    .post(urlgeneral + "Persona", {
+      jsonrpc: "2.0",
+      method: "PersonaGuardar",
+      params: {
+        dni: Persona.dni,
+        ubigeo: Persona.ubigeo,
+        nombre: Persona.nombre,
+        tipodocumentoidentidad: Persona.tipodocumentoidentidad,
+        direccion: Persona.direccion,
+        telefono: Persona.telefono,
+        email: Persona.email,
+        genero: Persona.genero ?? "",
+        estadocivil: Persona.estadocivil,
+        fechanacimiento: Persona.fechanacimiento,
+        ubigeonacimiento: Persona.ubigeonacimiento ?? "",
+        fechadefuncion: Persona.fechadefuncion ?? null,
+        usuario: Persona.usuario,
+        estado: Persona.estado,
+      },
+      id: 1,
+    })
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      var errores = {};
+      errores.mensaje = error;
+      errores.estado = 1;
+      return errores;
+    });
+};
