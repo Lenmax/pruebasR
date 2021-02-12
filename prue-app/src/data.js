@@ -121,14 +121,7 @@ export const tipoDocumento = () => {
     .post(urlgeneral + "TipoDocumentoIdentidad", {
       jsonrpc: "2.0",
       method: "TipoDocumentoIdentidadlistarpor",
-      params: {
-        body: {
-          tipodocumentoidentidad: null,
-          descripcion: null,
-          estado: null,
-          digitos: null,
-        },
-      },
+      params: {},
       id: 1,
     })
     .then(function (response) {
@@ -175,16 +168,14 @@ export const Procedimiento = () => {
       jsonrpc: "2.0",
       method: "Procedimientolistarpor",
       params: {
-        body: {
-          procedimiento: null,
-          denominacion: null,
-          tiempoestimado: null,
-          observacion: null,
-          codigo: null,
-          categoria: null,
-          baselegal: null,
-          estado: null,
-        },
+        procedimiento: null,
+        denominacion: null,
+        tiempoestimado: null,
+        observacion: null,
+        codigo: null,
+        categoria: null,
+        baselegal: null,
+        estado: null,
       },
       id: 2,
     })
@@ -267,14 +258,12 @@ export const Requisito = () => {
       jsonrpc: "2.0",
       method: "ProcedimientoRequisitolistarpor",
       params: {
-        body: {
-          procedimientorequisito: null,
-          requisito: null,
-          procedimiento: null,
-          descripcion: null,
-          urlformato: null,
-          estado: null,
-        },
+        procedimientorequisito: null,
+        requisito: null,
+        procedimiento: null,
+        descripcion: null,
+        urlformato: null,
+        estado: null,
       },
       id: 2,
     })
@@ -340,9 +329,7 @@ export const Persona = (dni) => {
       jsonrpc: "2.0",
       method: "PersonaRecuperar",
       params: {
-        body: {
-          dni: dni,
-        },
+        dni: dni,
       },
       id: 2,
     })

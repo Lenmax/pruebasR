@@ -163,6 +163,8 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
 
   //#endregion
 
+  console.log(Requisito);
+
   //Expediente
   //#region Expediente
 
@@ -608,7 +610,7 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
                                     : []
                                 }
                                 labelText=""
-                                accept="image/*"
+                                accept={req.extension} //accept="image/*"
                                 uploadMode="useForm"
                               />
                             </div>
