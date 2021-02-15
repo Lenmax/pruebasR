@@ -405,7 +405,6 @@ export const guardarNuevoExpediente = (Expediente) => {
 };
 
 export const guardarNuevoPersona = (Persona) => {
-  console.log(Persona);
   return axios
     .post(urlgeneral + "Persona", {
       jsonrpc: "2.0",
@@ -425,6 +424,28 @@ export const guardarNuevoPersona = (Persona) => {
         fechadefuncion: Persona.fechadefuncion ?? null,
         usuario: Persona.usuario,
         estado: Persona.estado,
+      },
+      id: 1,
+    })
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      var errores = {};
+      errores.mensaje = error;
+      errores.estado = 1;
+      return errores;
+    });
+};
+
+export const DependenciaInformacion = (rof, dependencia) => {
+  return axios
+    .post(urlgeneral + "Dependencia", {
+      jsonrpc: "2.0",
+      method: "DependenciaInformacion",
+      params: {
+        rof: rof,
+        dependencia: dependencia,
       },
       id: 1,
     })

@@ -155,6 +155,25 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
       }
     });
 
+    dataAPI.DependenciaInformacion(null, 106).then((res) => {
+      if (res.estado == 1) {
+        notify(res.mensaje);
+      } else {
+        const expediente =
+          "-" +
+          res.data.result[0].unidadorganica +
+          "-" +
+          res.data.result[0].dependencia +
+          "-" +
+          new Date().getFullYear() +
+          "-UNSAAC";
+        setExpediente((prevState) => ({
+          ...prevState,
+          expediente: expediente,
+        }));
+      }
+    });
+
     console.log("de esta forma solo se ejecuta una vez");
     return () => {
       //cleanup
@@ -162,8 +181,6 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
   }, []);
 
   //#endregion
-
-  console.log(Requisito);
 
   //Expediente
   //#region Expediente
@@ -305,7 +322,6 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
 
     setExpediente((prevState) => ({
       ...prevState,
-      expediente: "EXP6",
       descripcion: "",
       detalle_expediente: "",
       periodo: new Date().getFullYear(),
@@ -320,7 +336,7 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
 
     var nuevoExpediente = {};
     nuevoExpediente.procedimiento = Expediente.procedimiento;
-    nuevoExpediente.expediente = "EXP9";
+    nuevoExpediente.expediente = Expediente.expediente ?? "EXP";
     nuevoExpediente.documentointeresado = Expediente.documentointeresado;
     nuevoExpediente.responsablelegal = Expediente.responsablelegal;
     nuevoExpediente.descripcion = Expediente.descripcion ?? "";
