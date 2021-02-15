@@ -26,6 +26,9 @@ import * as dataAPI from "./data";
 import FileUploader from "devextreme-react/file-uploader";
 import notify from "devextreme/ui/notify";
 
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+
 const useStyles = makeStyles((theme) => ({
   mb1: {
     marginBottom: "1em",
@@ -58,8 +61,34 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
   const [Expediente, setExpediente] = useState({});
   const [selectedFiles, setselectedFiles] = useState([]);
 
-  //#region useEffect
+  const [open, setOpen] = useState([]);
 
+  const handleClickOpen = (procedimientorequisito) => {
+    console.log(open);
+    let abrir = {};
+    abrir.procedimientorequisito = procedimientorequisito;
+    abrir.estado = true;
+    let newArr = [...open]; // copying the old datas array
+    let indicegeneral = open.findIndex(
+      (item) => item.procedimientorequisito == procedimientorequisito
+    );
+    newArr[indicegeneral] = abrir;
+    setOpen(newArr);
+  };
+
+  const handleClose = (procedimientorequisito) => {
+    let abrir = {};
+    abrir.procedimientorequisito = procedimientorequisito;
+    abrir.estado = false;
+    let newArr = [...open]; // copying the old datas array
+    let indicegeneral = open.findIndex(
+      (item) => item.procedimientorequisito == procedimientorequisito
+    );
+    newArr[indicegeneral] = abrir;
+    setOpen(newArr);
+  };
+
+  //#region useEffect
   useEffect(() => {
     if (step == 2) {
       if (
@@ -119,7 +148,6 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
         }
       }
     }
-
     console.log("de esta forma se ejecuta mas de una vez y se va acumulando");
   });
 
@@ -134,7 +162,7 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
       } else setProcedimiento(res.data.result);
     });
     dataAPI.Requisito().then((res) => {
-      //console.log(res);
+      //console.log(res.data.result);
       if (res.estado == 1) {
         notify(res.mensaje);
       } else {
@@ -152,6 +180,14 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
             procedimientos: hash[k],
           }));
         setRequisito(newhash);
+
+        for (let index = 0; index < res.data.result.length; index++) {
+          const element = res.data.result[index];
+          let abrir = {};
+          abrir.procedimientorequisito = element.procedimientorequisito;
+          abrir.estado = false;
+          setOpen((oldArray) => [...oldArray, abrir]);
+        }
       }
     });
 
@@ -181,6 +217,9 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
   }, []);
 
   //#endregion
+
+  /*console.log("--------------------------------->");
+  console.log(selectedFiles);*/
 
   //Expediente
   //#region Expediente
@@ -723,6 +762,39 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
                         </Typography>
                       }
                     />
+
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => {
+                        handleClickOpen(
+                          selectedFiles.find((item) => item.indice == index)
+                            .procedimientorequisito
+                        );
+                      }}
+                    >
+                      ver archivo
+                    </Button>
+                    <SimpleDialog
+                      selectedValue={
+                        selectedFiles.find((item) => item.indice == index)
+                          .archivo.value[0]
+                      }
+                      open={
+                        open.find(
+                          (req) =>
+                            req.procedimientorequisito ==
+                            selectedFiles.find((item) => item.indice == index)
+                              .procedimientorequisito
+                        ).estado
+                      }
+                      onClose={() => {
+                        handleClose(
+                          selectedFiles.find((item) => item.indice == index)
+                            .procedimientorequisito
+                        );
+                      }}
+                    />
                   </ListItem>
                 ))}
             </List>
@@ -760,5 +832,55 @@ const GetStepContent = ({ step, handleNext, handleset }) => {
       return "Desconocido";
   }
 };
+
+function SimpleDialog(props) {
+  const classes = useStyles();
+  const { onClose, selectedValue, open } = props;
+  const { height, width } = getWindowDimensions();
+
+  const handleClose = () => {
+    onClose(selectedValue);
+  };
+
+  function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+      width,
+      height,
+    };
+  }
+
+  return (
+    <Dialog
+      maxWidth={width}
+      maxHeight={height}
+      onClose={handleClose}
+      aria-labelledby="simple-dialog-title"
+      open={open}
+    >
+      <Button
+        variant="outlined"
+        color="primary"
+        onClick={() => {
+          handleClose();
+        }}
+      >
+        cerrar
+      </Button>
+
+      {selectedValue.type !== "application/pdf" ? (
+        <img src={URL.createObjectURL(selectedValue)} />
+      ) : (
+        <iframe
+          width={width}
+          height={height}
+          src={URL.createObjectURL(selectedValue)}
+          type="application/pdf"
+          title="title"
+        />
+      )}
+    </Dialog>
+  );
+}
 
 export default GetStepContent;
